@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>TravelMate AI - Smart Travel Planner</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f7fb;
+  color: #253047;
+}
+
+header {
+  background: linear-gradient(120deg,#073b65,#168aad);
+  color: white;
+  text-align: center;
+  padding: 25px 15px;
+}
+
+header h1 {
+  font-size: 36px;
+  margin: 5px;
+}
+
+nav {
+  background: white;
+  padding: 15px;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 2px 8px #ddd;
+}
+
+nav a {
+  text-decoration: none;
+  color: #073b65;
+  font-weight: bold;
+  margin: 0 12px;
+}
+
+.hero {
+  background:
+    linear-gradient(#0008,#0008),
+    url("https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1400")
+    center/cover;
+
+  padding: 90px 15px;
+  text-align: center;
+  color: white;
+}
+
+.hero h2 {
+  font-size: 38px;
+}
+
+.hero p {
+  font-size: 18px;
+}
+
+.container {
+  max-width: 1000px;
+  margin: 30px auto;
+  padding: 20px;
+}
+
+.form-box {
+  background: white;
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: 0 3px 15px #ddd;
+}
+
+.form-box h2 {
+  color: #087e8b;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 18px;
+}
+
+label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 7px;
+}
+
+input, select {
+  width: 100%;
+  padding: 13px;
+  border: 1px solid #ccd5e0;
+  border-radius: 7px;
+  font-size: 15px;
+  background: white;
+}
+
+button {
+  background: #087e8b;
+  color: white;
+  padding: 13px 22px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #075b66;
+}
+
+.generate {
+  width: 100%;
+  margin-top: 22px;
+}
+
+#result {
+  display: none;
+  margin-top: 30px;
+}
+
+.result-box {
+  background: white;
+  padding: 22px;
+  margin-bottom: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px #ddd;
+}
+
+.result-box h2 {
+  color: #087e8b;
+}
+
+.budget-grid {
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 12px;
+}
+
+.budget-item {
+  background: #e7f5f5;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.day {
+  border-left: 4px solid #087e8b;
+  padding: 12px 15px;
+  margin: 15px 0;
+  background: #f2fafa;
+  border-radius: 5px;
+}
+
+.day h3 {
+  margin-top: 0;
+  color: #087e8b;
+}
+
+footer {
+  background: #073b65;
+  color: white;
+  padding: 25px;
+  text-align: center;
+}
+
+.note {
+  font-size: 13px;
+  color: #666;
+}
+
+@media(max-width:600px) {
+  .form-grid, .budget-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero h2 {
+    font-size: 27px;
+  }
+
+  nav a {
+    display: inline-block;
+    margin: 6px;
+  }
+}
+
+@media print {
+  header, nav, .hero, #planner > .form-box,
+  footer, #result > button {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+  }
+
+  #result {
+    display: block !important;
+  }
+
+  .result-box {
+    box-shadow: none;
+    border: 1px solid #ddd;
+    break-inside: avoid;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+
+<header>
+  <h1>✈️ TravelMate AI</h1>
+  <p>Your Smart AI-Based Travel Planner</p>
+</header>
+
+<!-- NAVIGATION -->
+
+<nav>
+  <a href="#home">Home</a>
+  <a href="#planner">Plan Trip</a>
+  <a href="#result">My Itinerary</a>
+</nav>
+
+<!-- HOME SECTION -->
+
+<section class="hero" id="home">
+  <h2>Explore The World With AI</h2>
+  <p>Plan your dream vacation according to your budget and interests.</p>
+
+  <a href="#planner">
+    <button>Plan My Trip</button>
+  </a>
+</section>
+
+<!-- TRAVEL PLANNER -->
+
+<div class="container" id="planner">
+
+<div class="form-box">
+
+  <h2>🌍 Create Your Travel Plan</h2>
+  <p>Enter your travel preferences below.</p>
+
+  <div class="form-grid">
+
+    <div>
+      <label>Select Destination</label>
+
+      <select id="destination">
+
+        <option value="Bengaluru">Bengaluru</option>
+        <option value="Kerala">Kerala</option>
+        <option value="Coorg">Coorg</option>
+        <option value="Shivamogga">Shivamogga</option>
+        <option value="Jaipur">Jaipur</option>
+        <option value="Mumbai">Mumbai</option>
+
+        <optgroup label="Historical Places in Karnataka">
+
+          <option value="Hampi">Hampi</option>
+          <option value="Mysuru">Mysuru</option>
+          <option value="Badami">Badami</option>
+          <option value="Belur">Belur</option>
+          <option value="Halebidu">Halebidu</option>
+          <option value="Pattadakal">Pattadakal</option>
+          <option value="Chitradurga">Chitradurga</option>
+          <option value="Bidar">Bidar</option>
+          <option value="Srirangapatna">Srirangapatna</option>
+
+        </optgroup>
+
+      </select>
+    </div>
+
+    <div>
+      <label>Travel Budget (₹)</label>
+      <input type="number" id="budget"
+      placeholder="Example: 10000" min="1">
+    </div>
+
+    <div>
+      <label>Number of Days</label>
+      <input type="number" id="days"
+      min="1" max="7" value="3">
+    </div>
+
+    <div>
+      <label>Travel Interest</label>
+
+      <select id="interest">
+        <option value="Adventure">Adventure</option>
+        <option value="Nature">Nature</option>
+        <option value="Beach">Beach</option>
+        <option value="History">History</option>
+        <option value="Food">Food</option>
+      </select>
+    </div>
+
+  </div>
+
+  <button class="generate" onclick="generatePlan()">
+    🤖 Generate AI Travel Plan
+  </button>
+
+</div>
+
+<!-- RESULTS -->
+
+<div id="result">
+
+  <div class="result-box">
+
+    <h2>✨ Your Recommended Trip</h2>
+
+    <h3 id="tripTitle"></h3>
+
+    <p id="tripDescription"></p>
+
+  </div>
+
+  <div class="result-box">
+
+    <h2>📅 Your Travel Itinerary</h2>
+
+    <div id="itinerary"></div>
+
+  </div>
+
+  <div class="result-box">
+
+    <h2>💰 Estimated Travel Budget</h2>
+
+    <div class="budget-grid">
+
+      <div class="budget-item">
+        <b>🏨 Hotel</b>
+        <p id="hotel"></p>
+      </div>
+
+      <div class="budget-item">
+        <b>🍔 Food</b>
+        <p id="food"></p>
+      </div>
+
+      <div class="budget-item">
+        <b>🚕 Transport</b>
+        <p id="transport"></p>
+      </div>
+
+      <div class="budget-item">
+        <b>🎡 Activities</b>
+        <p id="activities"></p>
+      </div>
+
+    </div>
+
+    <h2 id="total"></h2>
+
+    <h3 id="budgetStatus"></h3>
+
+    <p class="note">
+      Note: These are approximate planning estimates,
+      not live hotel or transport prices.
+    </p>
+
+  </div>
+
+  <button onclick="window.print()">
+    🖨️ Save / Print Travel Plan
+  </button>
+
+</div>
+
+</div>
+
+<!-- FOOTER -->
+
+<footer>
+
+  <h3>✈️ TravelMate AI</h3>
+
+  <p>Smart Travel Planning Made Easy</p>
+
+  <p>Web Technology Mini Project</p>
+
+  <p>© 2026 TravelMate AI</p>
+
+</footer>
+
+<script>
+
+// DESTINATION INFORMATION
+
+const destinations = {
+
+Bengaluru: {
+description: "Explore gardens, palaces and modern attractions of Bengaluru.",
+places: {
+Nature: ["Lalbagh Botanical Garden","Cubbon Park","Nandi Hills"],
+Adventure: ["Wonderla","Nandi Hills Trek","Adventure Activities"],
+History: ["Bangalore Palace","Tipu Sultan's Summer Palace","Bangalore Fort"],
+Beach: ["Ulsoor Lake","Sankey Tank"],
+Food: ["VV Puram Food Street","Malleswaram Food Street"]
+}
+},
+
+Kerala: {
+description: "Experience beautiful backwaters, mountains and greenery.",
+places: {
+Nature: ["Munnar","Alleppey Backwaters","Wayanad"],
+Adventure: ["Wayanad Trekking","Bamboo Rafting","Hill Adventures"],
+History: ["Fort Kochi","Mattancherry Palace","Bekal Fort"],
+Beach: ["Kovalam Beach","Varkala Beach","Cherai Beach"],
+Food: ["Kochi Food Streets","Local Kerala Restaurants"]
+}
+},
+
+Coorg: {
+description: "Discover coffee plantations, waterfalls and green landscapes.",
+places: {
+Nature: ["Abbey Falls","Raja's Seat","Mandalpatti"],
+Adventure: ["Tadiandamol Trek","River Rafting","Jeep Safari"],
+History: ["Madikeri Fort","Omkareshwara Temple","Nalknad Palace"],
+Beach: ["Cauvery River Viewpoints"],
+Food: ["Coorg Coffee Estates","Local Kodava Restaurants"]
+}
+},
+
+Shivamogga: {
+description: "Explore waterfalls, forests and historical temples.",
+places: {
+Nature: ["Jog Falls","Kundadri Hills","Sakrebailu Elephant Camp"],
+Adventure: ["Kodachadri Trek","Kundadri Hills Trek","Nature Trails"],
+History: ["Keladi Temple","Ikkeri Aghoreshwara Temple","Keladi Museum"],
+Beach: ["Sharavathi River Viewpoints"],
+Food: ["Malnad Restaurants","Local Food Streets"]
+}
+},
+
+Jaipur: {
+description: "Discover royal palaces, forts and Rajasthan's rich culture.",
+places: {
+Nature: ["Jal Mahal","Central Park","Sisodia Rani Garden"],
+Adventure: ["Hot Air Balloon Ride","Desert Activities"],
+History: ["Amber Fort","Hawa Mahal","City Palace"],
+Beach: ["Jal Mahal Waterfront"],
+Food: ["Chokhi Dhani","Local Food Markets"]
+}
+},
+
+Mumbai: {
+description: "Experience India's vibrant city and coastal attractions.",
+places: {
+Nature: ["Sanjay Gandhi National Park","Hanging Gardens"],
+Adventure: ["Kanheri Caves Trek","Coastal Activities"],
+History: ["Gateway of India","Elephanta Caves","Chhatrapati Shivaji Maharaj Terminus"],
+Beach: ["Juhu Beach","Marine Drive"],
+Food: ["Mumbai Street Food","Colaba Cafes"]
+}
+},
+
+Hampi: {
+description: "Explore the magnificent ruins of the Vijayanagara Empire.",
+places: {
+Nature: ["Tungabhadra River","Matanga Hill","Sanapur Lake"],
+Adventure: ["Coracle Ride","Cycling Around Hampi"],
+History: ["Virupaksha Temple","Vijaya Vittala Temple","Stone Chariot"],
+Beach: ["Sanapur Lake"],
+Food: ["Hampi Local Food Cafes"]
+}
+},
+
+Mysuru: {
+description: "Discover royal heritage, palaces and beautiful gardens.",
+places: {
+Nature: ["Brindavan Gardens","Karanji Lake","Chamundi Hills"],
+Adventure: ["Chamundi Hills Trek","Cycling Around Mysuru"],
+History: ["Mysore Palace","Jaganmohan Palace","Srirangapatna"],
+Beach: ["Kukkarahalli Lake"],
+Food: ["Mysore Food Streets","Mysore Pak Shops"]
+}
+},
+
+Badami: {
+description: "Explore ancient cave temples and Chalukyan architecture.",
+places: {
+Nature: ["Agastya Lake","Banashankari Hills"],
+Adventure: ["Badami Rock Climbing","Cave Exploration"],
+History: ["Badami Cave Temples","Bhutanatha Temples","Badami Fort"],
+Beach: ["Agastya Lake Viewpoint"],
+Food: ["Local North Karnataka Restaurants"]
+}
+},
+
+Belur: {
+description: "Explore the beautiful Hoysala architecture and ancient temples.",
+places: {
+Nature: ["Yagachi Dam","Belur Countryside"],
+Adventure: ["Yagachi Water Activities","Nature Walks"],
+History: ["Chennakesava Temple","Hoysala Sculptures","Belur Temple Complex"],
+Beach: ["Yagachi Reservoir Viewpoint"],
+Food: ["Local Karnataka Restaurants"]
+}
+},
+
+Halebidu: {
+description: "Discover magnificent temples and Hoysala stone carvings.",
+places: {
+Nature: ["Halebidu Lake","Temple Gardens"],
+Adventure: ["Heritage Walk","Photography Tour"],
+History: ["Hoysaleswara Temple","Kedareshwara Temple","Jain Basadi"],
+Beach: ["Halebidu Lake Viewpoint"],
+Food: ["Local Malnad Restaurants"]
+}
+},
+
+Pattadakal: {
+description: "Visit UNESCO-listed temples and ancient Chalukyan monuments.",
+places: {
+Nature: ["Malaprabha River","Pattadakal Countryside"],
+Adventure: ["Heritage Walking Tour","Photography"],
+History: ["Virupaksha Temple","Mallikarjuna Temple","Sangameshwara Temple"],
+Beach: ["Malaprabha River Viewpoint"],
+Food: ["Local North Karnataka Restaurants"]
+}
+},
+
+Chitradurga: {
+description: "Experience historic forts and magnificent hill landscapes.",
+places: {
+Nature: ["Chandravalli Lake","Jogimatti Hills"],
+Adventure: ["Fort Trekking","Rock Climbing"],
+History: ["Chitradurga Fort","Onake Obavva Kindi","Ancient Temples"],
+Beach: ["Chandravalli Lake"],
+Food: ["Local Karnataka Restaurants"]
+}
+},
+
+Bidar: {
+description: "Discover the heritage of the Bahmani and Barid Shahi kingdoms.",
+places: {
+Nature: ["Gurudwara Nanak Jhira Sahib Gardens","Papnash Lake"],
+Adventure: ["Heritage Walk","Photography Tour"],
+History: ["Bidar Fort","Rangin Mahal","Mahmud Gawan Madrasa"],
+Beach: ["Papnash Lake"],
+Food: ["Local Bidar Restaurants"]
+}
+},
+
+Srirangapatna: {
+description: "Explore the historical town associated with Tipu Sultan and Mysore.",
+places: {
+Nature: ["Ranganathittu Bird Sanctuary","Cauvery River"],
+Adventure: ["Bird Watching","Nature Walk"],
+History: ["Daria Daulat Bagh","Gumbaz","Ranganathaswamy Temple"],
+Beach: ["Cauvery River Viewpoints"],
+Food: ["Local Mysuru Restaurants"]
+}
+}
+
+};
+
+
+// GENERATE TRAVEL PLAN
+
+function generatePlan() {
+
+  let destination =
+    document.getElementById("destination").value;
+
+  let budget =
+    Number(document.getElementById("budget").value);
+
+  let days =
+    Number(document.getElementById("days").value);
+
+  let interest =
+    document.getElementById("interest").value;
+
+  if (!Number.isFinite(budget) || budget <= 0) {
+    alert("Please enter a valid travel budget!");
+    return;
+  }
+
+  if (!Number.isInteger(days) || days < 1 || days > 7) {
+    alert("Please select between 1 and 7 travel days!");
+    return;
+  }
+
+  let data = destinations[destination];
+
+  let places = data.places[interest];
+
+  // TRIP TITLE
+
+  document.getElementById("tripTitle").innerHTML =
+    destination + " - " + days + " Days Trip";
+
+  document.getElementById("tripDescription").innerHTML =
+    "🤖 TravelMate Recommendation: " +
+    data.description +
+    " Your selected interest is " + interest + ".";
+
+  // CREATE ITINERARY
+
+  let itineraryHTML = "";
+
+  for (let i = 0; i < days; i++) {
+
+    let place = places[i % places.length];
+
+    itineraryHTML += `
+      <div class="day">
+
+        <h3>📅 Day ${i + 1}</h3>
+
+        <p>🌅 Morning: Visit ${place}</p>
+
+        <p>🍽️ Afternoon: Enjoy local food and sightseeing.</p>
+
+        <p>🌆 Evening: Relax and explore nearby attractions.</p>
+
+      </div>
+    `;
+
+  }
+
+  document.getElementById("itinerary").innerHTML =
+    itineraryHTML;
+
+
+  // BUDGET CALCULATION
+
+  let hotelCost = days * 1500;
+
+  let foodCost = days * 600;
+
+  let transportCost = days * 500;
+
+  let activityCost = days * 400;
+
+  let totalCost =
+    hotelCost +
+    foodCost +
+    transportCost +
+    activityCost;
+
+
+  // DISPLAY EXPENSES
+
+  document.getElementById("hotel").innerHTML =
+    "₹" + hotelCost;
+
+  document.getElementById("food").innerHTML =
+    "₹" + foodCost;
+
+  document.getElementById("transport").innerHTML =
+    "₹" + transportCost;
+
+  document.getElementById("activities").innerHTML =
+    "₹" + activityCost;
+
+
+  document.getElementById("total").innerHTML =
+    "Total Estimated Cost: ₹" + totalCost;
+
+
+  // CHECK USER BUDGET
+
+  document.getElementById("budgetStatus").innerHTML =
+    totalCost <= budget
+    ? "✅ Your trip is within your budget!"
+    : "⚠️ Your trip exceeds your budget by ₹" +
+      (totalCost - budget);
+
+
+  // SHOW RESULTS
+
+  document.getElementById("result").style.display =
+    "block";
+
+  document.getElementById("result").scrollIntoView({
+    behavior: "smooth"
+  });
+
+}
+
+</script>
+
+</body>
+</html>
